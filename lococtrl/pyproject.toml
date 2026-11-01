@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lococtrl"
+version = "0.1.0"
+description = "脚型ロボット歩行制御の検証用実装（MuJoCo）"
+requires-python = ">=3.10"
+dependencies = [
+    "mujoco>=3.1",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pyyaml>=6.0",
+    "osqp>=0.6",          # 全身制御（ihmc）と接触レンチ配分の QP
+]
+
+[tool.setuptools.packages.find]
+include = ["lococtrl*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "slow: 閉ループのシミュレーションを回す時間のかかる試験",
+    "timing: 実行環境のスケジューリングに依存する試験（既定で skip）",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

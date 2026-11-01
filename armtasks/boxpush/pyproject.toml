@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "boxpush"
+version = "0.1.0"
+description = "腕付き G1 で重い箱を押す全身作業（lococtrl を基盤にした箱押しの強化学習）"
+requires-python = ">=3.10"
+# lococtrl はリポジトリ直下から `pip install -e lococtrl -e armtasks/boxpush` で入れる。
+# 入れていなくても boxpush/__init__.py が ../../lococtrl を sys.path に足す。
+dependencies = [
+    "mujoco>=3.1",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pyyaml>=6.0",
+    "osqp>=0.6",
+    "gymnasium>=0.29.1",
+]
+
+[project.optional-dependencies]
+viz = ["matplotlib>=3.7", "Pillow>=9.0"]
+train = ["torch>=2.8", "stable-baselines3>=2.9", "tensorboard>=2.12"]
+dev = ["pytest>=7.0", "ruff"]
+
+[tool.setuptools.packages.find]
+include = ["boxpush*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["slow: 短いシミュレーションを含む試験"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

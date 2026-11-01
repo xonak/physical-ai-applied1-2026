@@ -1,0 +1,37 @@
+# Unitree G1（下半身 12 自由度、腕と腰は固定）。
+# MJCF は lococtrl.sim.mjcf_adapt で原典 g1.xml から生成した派生ファイルである。
+# **g1_loco.xml を手で編集しないこと。** 原典を更新したら再生成する。
+name: g1_lower
+mjcf_path: assets/07_unitree_g1/g1_loco.xml
+backend: mujoco
+
+# 「脚」は left / right の 2 本。
+leg_names: [left, right]
+joint_names:
+  - [left_hip_pitch_joint,  left_hip_roll_joint,  left_hip_yaw_joint,
+     left_knee_joint,       left_ankle_pitch_joint, left_ankle_roll_joint]
+  - [right_hip_pitch_joint, right_hip_roll_joint, right_hip_yaw_joint,
+     right_knee_joint,      right_ankle_pitch_joint, right_ankle_roll_joint]
+foot_sites: [left_foot_site, right_foot_site]
+foot_geoms: [left_foot, right_foot]
+base_body: pelvis
+
+# 公称姿勢。hip_pitch = -t, knee = 2t, ankle_pitch = -t（t = 0.3 rad）で膝を曲げ、
+# 胴体を鉛直に保ったまま重心を下げる。膝を伸ばしきった姿勢（t = 0）は特異で
+# ヤコビアンが退化するため歩行に使えない。
+q_nominal: [-0.3, 0.0, 0.0, 0.6, -0.3, 0.0,
+            -0.3, 0.0, 0.0, 0.6, -0.3, 0.0]
+h_nominal: 0.7634    # 上記姿勢で足裏が接地するときの pelvis 高さ [m]（実測）
+foot_radius: 0.0     # 足先 site を足裏面に置いてあるので補正は不要
+
+mu: 0.6              # 原典 default class="foot" の friction と同じ
+f_min: 5.0           # 接触力 z 下限 [N]。二足は遊脚期に完全に離れる
+f_max: 600.0         # 接触力 z 上限 [N]。片足支持で m*g = 327 N を超える余裕を見る
+tau_max: [88.0, 139.0, 88.0, 139.0, 50.0, 50.0,
+          88.0, 139.0, 88.0, 139.0, 50.0, 50.0]   # 原典 actuatorfrcrange [N*m]
+
+# --- 平面足の接触レンチ（トルク制御の全身制御で使う）---
+# 足裏 box の半長 [m]（MJCF 生成時の foot_box_size と一致させること）。
+# 足先 site は box の中心直下にあるので、CoP の許容範囲は site を中心とする矩形になる。
+foot_half_size: [0.085, 0.0275]
+mu_yaw: 0.02         # ヨー方向のねじり摩擦の係数 [m]（|tau_z| <= mu_yaw * f_z）

@@ -1,0 +1,31 @@
+_comment: >-
+  箱押し（対照）: box_p1_stand_push.yaml と同じ箱を直立（lean_x 0）で押す。CoP が踵に張り付いて ~30 N で押し負け、箱はほぼ動かない。腕付き G1 × dlr × online endless（指令 0 で足を揃えて立つ）。
+  箱は 20 kg、箱-床の摩擦 0.2（静止摩擦 ≈ 39 N、箱側の priority で床の 0.8 を上書き）、
+  奥行き 0.5 m（転倒限界 ≈ 63 N）、高さ 1.0 m。手先は構えの高さ 0.77 m で面を押す。
+  t = 2 s から 1 s で 40 N まで立ち上げる。前傾 lean_x 0.04（直立 lean_x 0 では CoP が踵に張り付き ~30 N で押し負ける）。
+  完了条件: 転倒なし、箱が動く（静止摩擦 39 N を超える）。押付け力の追従は box_p1_force_track.yaml で見る。
+robot: ../robot_g1_box.yaml
+mapper:
+  kind: dlr
+planner:
+  kind: online
+  online:
+    source: velocity
+    vx: 0.0
+    endless: true
+    duration: 8.0
+scenario:
+  box:
+    enable: true
+    half_size: [0.25, 0.30, 0.50]
+    mass: 20.0
+    friction: [0.2, 0.005, 0.0001]
+    pos: [0.71, 0.0]          # 面 x = 0.46。構えの手の最前点 x 0.442 + 2 cm。手先高さ 0.77 m での最大リーチ（最前点 ~0.48）の内側
+stabilizer:
+  kp_rot_wrench: 60.0   # 立位で上体ピッチが緩やかに発散する（既定 20 では剛性 ~40 N*m/rad が上体の重力 ~44 N*m/rad に負ける）
+  kd_rot_wrench: 12.0
+push:
+  f_push: 40.0
+  t_start: 2.0
+  t_ramp: 1.0
+  lean_x: 0.0               # 直立（前傾なし）: 押し負けることを見る対照条件

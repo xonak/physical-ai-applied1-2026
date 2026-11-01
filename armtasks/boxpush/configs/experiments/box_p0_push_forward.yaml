@@ -1,0 +1,17 @@
+_comment: >-
+  外乱の確認: box_p0.yaml の条件で前押し 18 N*s（t = 1.85 s）。腕を固定した G1（robot_g1.yaml）の dlr + オンライン計画は 18 N*s に耐える。
+  目安: 転倒しない。
+robot: ../robot_g1_box.yaml   # 実験設定ファイル基準の相対パス
+mapper:
+  kind: dlr
+planner:
+  kind: online
+gait:
+  n_step: 6
+scenario:
+  kind: push
+  impulse: [18.0, 0.0, 0.0]
+  t_push: 1.85
+  box:
+    enable: true
+    pos: [2.5, 0.0]

@@ -1,0 +1,30 @@
+_comment: >-
+  箱押し: 押しながら歩く（説明資料の評価と学習で使う設定）。box_p1_stand_push と同じ 20 kg の箱（静止摩擦 ≈ 39 N）を、t = 2 s から 40 N で押し、
+  同時に 0.1 m/s で歩き出す。前傾 lean_x は外力に釣り合う量 F/(m omega^2) ≈ 0.08 m（DCM 参照の CMP をずらす）。
+  成功条件: 転倒なし、箱が歩行に合わせて進む（10 s で 0.5 m 以上）。
+robot: ../robot_g1_box_sphere.yaml
+mapper:
+  kind: dlr
+planner:
+  kind: online
+  online:
+    source: velocity
+    vx: 0.0
+    endless: true
+    duration: 10.0
+scenario:
+  box:
+    enable: true
+    half_size: [0.25, 0.30, 0.50]
+    mass: 20.0
+    friction: [0.2, 0.005, 0.0001]
+    pos: [0.71, 0.0]
+stabilizer:
+  kp_rot_wrench: 60.0
+  kd_rot_wrench: 12.0
+push:
+  f_push: 40.0
+  t_start: 2.0
+  t_ramp: 1.0
+  lean_x: 0.08
+  vx: 0.10

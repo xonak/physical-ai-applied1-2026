@@ -1,0 +1,19 @@
+_comment: >-
+  歩行の確認: 腕付き G1（robot_g1_box.yaml、腕 14 自由度）を dlr + オンライン計画（0.2 m/s、10 歩）で歩かせる。
+  腕は q_nominal の「前に構える」姿勢を零空間の関節姿勢インピーダンスで保持する。
+  箱は前方 2.5 m に置く（触れない。シーンに箱があっても歩行が変わらないことを見る）。
+  目安: DCM 誤差 RMS が腕なし G1（robot_g1.yaml）の dlr + オンライン計画の 4.2 mm ±10% 以内。
+robot: ../robot_g1_box.yaml   # 実験設定ファイル基準の相対パス
+mapper:
+  kind: dlr
+planner:
+  kind: online
+  online:
+    source: velocity
+    vx: 0.2
+gait:
+  n_step: 10
+scenario:
+  box:
+    enable: true
+    pos: [2.5, 0.0]

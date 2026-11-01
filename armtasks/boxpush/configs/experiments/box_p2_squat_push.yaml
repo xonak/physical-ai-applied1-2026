@@ -1,0 +1,30 @@
+_comment: >-
+  箱押し: しゃがんで押す。box_p1_stand_push と同じ 20 kg の箱を、重心を 10 cm 下げて（手も 10 cm 下がる）、
+  前傾なし（lean_x 0）で 40 N 押す。直立（box_p1_stand_push_upright）では 25 N で押し負ける条件。
+  しゃがむと手の高さ h が下がり、F·h ≤ m g·d の余裕が増える。
+robot: ../robot_g1_box.yaml
+mapper:
+  kind: dlr
+planner:
+  kind: online
+  online:
+    source: velocity
+    vx: 0.0
+    endless: true
+    duration: 8.0
+stabilizer:
+  kp_rot_wrench: 60.0
+  kd_rot_wrench: 12.0
+scenario:
+  box:
+    enable: true
+    half_size: [0.25, 0.30, 0.50]
+    mass: 20.0
+    friction: [0.2, 0.005, 0.0001]
+    pos: [0.695, 0.0]         # 面 x = 0.445。しゃがむと骨盤が後ろに下がり手が届かなくなるので、立位の条件より近く（構えの手の最前点 0.442）
+push:
+  f_push: 40.0
+  t_start: 2.0
+  t_ramp: 1.0
+  lean_x: 0.0
+  dz_com: -0.10

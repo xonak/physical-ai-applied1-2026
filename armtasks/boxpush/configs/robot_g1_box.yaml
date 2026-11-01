@@ -1,0 +1,50 @@
+# Unitree G1（箱押し用: 脚 12 + 腕 14 = 26 自由度、腰 3 は固定）。手の衝突はゴム手のメッシュ。
+# MJCF は `python -m boxpush.model` が lococtrl の原典 g1.xml から生成する派生ファイルである。
+# **g1_box.xml を手で編集しないこと。** 原典を更新したら再生成する。
+# 脚まわり（足裏寸法、公称姿勢、接触の上下限）は lococtrl/configs/robot_g1.yaml と同じ値にしてある。
+# mjcf_path はこの設定ファイルのあるディレクトリ基準（lococtrl.common.config.load_robot_config にパスで渡す）。
+name: g1_box
+mjcf_path: ../assets/g1_box.xml
+backend: mujoco
+
+leg_names: [left, right]
+joint_names:
+  - [left_hip_pitch_joint,  left_hip_roll_joint,  left_hip_yaw_joint,
+     left_knee_joint,       left_ankle_pitch_joint, left_ankle_roll_joint]
+  - [right_hip_pitch_joint, right_hip_roll_joint, right_hip_yaw_joint,
+     right_knee_joint,      right_ankle_pitch_joint, right_ankle_roll_joint]
+# 腕（自前順で脚の後ろ）。q_nominal / tau_max もこの順に並べる
+arm_joint_names:
+  - [left_shoulder_pitch_joint,  left_shoulder_roll_joint,  left_shoulder_yaw_joint,
+     left_elbow_joint, left_wrist_roll_joint, left_wrist_pitch_joint, left_wrist_yaw_joint]
+  - [right_shoulder_pitch_joint, right_shoulder_roll_joint, right_shoulder_yaw_joint,
+     right_elbow_joint, right_wrist_roll_joint, right_wrist_pitch_joint, right_wrist_yaw_joint]
+hand_sites: [left_hand_site, right_hand_site]
+foot_sites: [left_foot_site, right_foot_site]
+foot_geoms: [left_foot, right_foot]
+base_body: pelvis
+
+# 公称姿勢。脚は robot_g1.yaml と同じ。腕は「前に構える」姿勢:
+# shoulder_pitch -0.6, shoulder_roll ±0.2（外向き）, elbow 1.1 で、
+# 手先 site が骨盤前方 0.375 m、高さ 0.77 m、左右 ±0.19 m に来る（立位、実測）。
+# ゴムの手は site より 0.067 m 前に出る（最前点 x 0.442）。肘を曲げておくのは、押すときに腕を
+# 伸ばす余地（最大リーチ site x ≈ 0.465）を残すため。(-0.7, ±0.15, 0.8) では手先 x 0.43 となり、
+# 押す相手に手が届くぎりぎりで力が通らなかった。
+# 腕を全関節 0 にすると robot_g1.yaml（腕を 0 で固定）と同じ質量配置になる。
+q_nominal: [-0.3, 0.0, 0.0, 0.6, -0.3, 0.0,
+            -0.3, 0.0, 0.0, 0.6, -0.3, 0.0,
+            -0.6,  0.2, 0.0, 1.1, 0.0, 0.0, 0.0,
+            -0.6, -0.2, 0.0, 1.1, 0.0, 0.0, 0.0]
+h_nominal: 0.7634
+foot_radius: 0.0
+
+mu: 0.6
+f_min: 5.0
+f_max: 600.0
+tau_max: [88.0, 139.0, 88.0, 139.0, 50.0, 50.0,
+          88.0, 139.0, 88.0, 139.0, 50.0, 50.0,
+          25.0, 25.0, 25.0, 25.0, 25.0, 5.0, 5.0,
+          25.0, 25.0, 25.0, 25.0, 25.0, 5.0, 5.0]   # 原典 actuatorfrcrange [N*m]。手首 pitch / yaw は 5
+
+foot_half_size: [0.085, 0.0275]
+mu_yaw: 0.02

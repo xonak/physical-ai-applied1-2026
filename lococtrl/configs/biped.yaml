@@ -1,0 +1,54 @@
+# 二足（Unitree G1 相当）の計画・制御パラメータ。
+# **マジックナンバーをコードに書かない**方針に従い、数値はすべてここに置く。
+
+preview:            # LIPM 予見制御（Kajita 2003）
+  z_c: 0.80         # 重心高さ [m]（G1 の立位でおよそこの程度）
+  dt: 0.005         # 離散刻み [s]
+  preview: 1.60     # 予見長 [s]。短くすると ZMP 逸脱が増える
+  q_e: 1.0          # ZMP 追従誤差の重み [-]
+  q_x: [0.0, 0.0, 0.0]   # 状態の重み（c, c_dot, c_ddot）[-]
+  r: 1.0e-6         # ジャークの重み [-]。Q/R の比が極端だと Riccati が解けない
+  g: 9.81           # 重力加速度 [m/s^2]
+
+walk:               # 2D の重心軌道生成（予見制御・DCM）の試験用の歩行パターン
+  n_step: 8         # 歩数 [-]
+  step_length: 0.20 # 歩幅 [m]
+  period: 0.80      # 1 歩の周期 [s]
+  foot_half_length: 0.09  # 足の前後半長 [m]（1 軸での支持多角形幅）
+  t_start: 1.0      # 歩き出す前の静止時間 [s]
+  t_end: 2.0        # 歩き終えた後の静止時間 [s]
+
+walk_3d:            # 3D 歩行（MuJoCo + G1）
+  t_ds: 0.15        # 両脚支持期 [s]。0 にすると踏み替えで ZMP が足を出る
+  t_ss: 0.35        # 単脚支持期 [s]
+  step_length: 0.20 # 1 歩の踏み出し距離 [m]。平均速度 = step_length/2/(t_ds+t_ss)
+  step_width: 0.237 # 左右の足の y 間隔 [m]（G1 公称姿勢の足先間隔の実測）
+  swing_height: 0.05  # 遊脚の持ち上げ高さ [m]
+  n_step: 10        # 歩数 [-]
+  t_start: 1.0      # 歩き出す前の静止時間 [s]
+  t_end: 2.0        # 歩き終えた後の静止時間 [s]
+  ds_subdiv: 10     # 両脚支持期を区分一定で近似する分割数 [-]
+
+stabilizer:         # DCM 安定化 + トルク制御の全身制御（ihmc / dlr / rl 共通）
+  k_dcm: 2.0        # DCM フィードバックゲイン [-]。閉ループ極 -k*omega、k>0 で安定
+  kp_com_z: 100.0   # 重心高さ P [1/s^2]
+  kd_com_z: 20.0    # 重心高さ D [1/s]
+  kp_rot: 200.0     # 胴体姿勢 P [1/s^2]
+  kd_rot: 30.0      # 胴体角速度 D [1/s]
+  kp_rot_wrench: 20.0  # 重心レンチのモーメント成分に入れる胴体姿勢 P [1/s^2]（DLR 型の主経路）
+  kd_rot_wrench: 4.0   # 同 D [1/s]
+  tau_rot_max: 20.0    # 重心まわりモーメントの上限 [N*m]（CoP 指令との衝突を防ぐ）
+  kp_foot: 400.0    # 遊脚足先位置 P [1/s^2]
+  kd_foot: 40.0     # 遊脚足先速度 D [1/s]
+  kp_foot_rot: 200.0  # 足裏姿勢 P [1/s^2]
+  kd_foot_rot: 20.0   # 足裏角速度 D [1/s]
+  kp_stance_foot: 100.0  # 立脚の足先位置保持 P [1/s^2]（着地位置にラッチ）
+  kd_stance_foot: 20.0   # 同 D [1/s]
+  kp_stance_rot: 100.0   # 立脚の足裏姿勢保持 P [1/s^2]（床に平らに保つ）
+  kd_stance_rot: 10.0    # 同 D [1/s]
+  kp_posture: 50.0  # 関節姿勢 P [1/s^2]
+  kd_posture: 5.0   # 関節姿勢 D [1/s]
+  early_contact_ratio: 0.7  # 遊脚進捗がこれを超えて接地したら立脚扱い [-]
+  early_contact_load: 0.3   # 早期接地した足の荷重係数 [-]
+  cop_margin: 0.01  # CoP clamp の縁からの余裕 [m]
+  load_bound_ramp: 0.3  # 法線力上限を 0 -> f_max に立ち上げる荷重係数の幅 [-]（踏み替え前後だけ絞る）

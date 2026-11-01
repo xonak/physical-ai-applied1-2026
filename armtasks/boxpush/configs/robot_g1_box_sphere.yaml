@@ -1,0 +1,39 @@
+# Unitree G1。手先siteを中心とする半径0.065 mの球を手の衝突形状に使用。
+# g1_box_sphere.xml は python -m boxpush.model で生成する。
+name: g1_box_sphere
+mjcf_path: ../assets/g1_box_sphere.xml
+backend: mujoco
+
+leg_names: [left, right]
+joint_names:
+  - [left_hip_pitch_joint,  left_hip_roll_joint,  left_hip_yaw_joint,
+     left_knee_joint,       left_ankle_pitch_joint, left_ankle_roll_joint]
+  - [right_hip_pitch_joint, right_hip_roll_joint, right_hip_yaw_joint,
+     right_knee_joint,      right_ankle_pitch_joint, right_ankle_roll_joint]
+arm_joint_names:
+  - [left_shoulder_pitch_joint,  left_shoulder_roll_joint,  left_shoulder_yaw_joint,
+     left_elbow_joint, left_wrist_roll_joint, left_wrist_pitch_joint, left_wrist_yaw_joint]
+  - [right_shoulder_pitch_joint, right_shoulder_roll_joint, right_shoulder_yaw_joint,
+     right_elbow_joint, right_wrist_roll_joint, right_wrist_pitch_joint, right_wrist_yaw_joint]
+hand_sites: [left_hand_site, right_hand_site]
+foot_sites: [left_foot_site, right_foot_site]
+foot_geoms: [left_foot, right_foot]
+base_body: pelvis
+
+q_nominal: [-0.3, 0.0, 0.0, 0.6, -0.3, 0.0,
+            -0.3, 0.0, 0.0, 0.6, -0.3, 0.0,
+            -0.6,  0.2, 0.0, 1.1, 0.0, 0.0, 0.0,
+            -0.6, -0.2, 0.0, 1.1, 0.0, 0.0, 0.0]
+h_nominal: 0.7634
+foot_radius: 0.0
+
+mu: 0.6
+f_min: 5.0
+f_max: 600.0
+tau_max: [88.0, 139.0, 88.0, 139.0, 50.0, 50.0,
+          88.0, 139.0, 88.0, 139.0, 50.0, 50.0,
+          25.0, 25.0, 25.0, 25.0, 25.0, 5.0, 5.0,
+          25.0, 25.0, 25.0, 25.0, 25.0, 5.0, 5.0]   # 原典 actuatorfrcrange [N*m]。手首 pitch / yaw は 5
+
+foot_half_size: [0.085, 0.0275]
+mu_yaw: 0.02
